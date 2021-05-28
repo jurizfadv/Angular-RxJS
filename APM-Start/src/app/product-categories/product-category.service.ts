@@ -4,12 +4,20 @@ import { Injectable } from '@angular/core';
 import { throwError, Observable } from 'rxjs';
 
 import { ProductCategory } from './product-category';
+import { catchError, shareReplay, tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductCategoryService {
   private productCategoriesUrl = 'api/productCategories';
+
+  productCategories$ = this.http.get<ProductCategory[]>(this.productCategoriesUrl)
+    .pipe(
+      tap(data => console.log('categories', JSON.stringify(data))),
+      shareReplay(1),
+      catchError(this.handleError)
+    );
 
   constructor(private http: HttpClient) { }
 
@@ -29,3 +37,7 @@ export class ProductCategoryService {
     return throwError(errorMessage);
   }
 }
+// function tap(arg0: (data: any) => void): import("rxjs").OperatorFunction<ProductCategory[], unknown> {
+//   throw new Error('Function not implemented.');
+// }
+
